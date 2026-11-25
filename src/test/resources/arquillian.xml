@@ -6,6 +6,9 @@
     <container qualifier="wildfly-managed" default="true">
         <configuration>
             <property name="jbossHome">${jboss.dir}</property>
+            <!--
+            <property name="javaHome">/usr/lib/jvm/java-21-openjdk</property>
+            -->
             <property name="serverConfig">standalone-full.xml</property>
             <property name="javaVmArguments">-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Djava.net.preferIPv4Stack=true</property>
         </configuration>
