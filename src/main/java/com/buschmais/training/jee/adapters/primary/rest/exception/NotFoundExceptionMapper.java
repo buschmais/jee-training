@@ -1,4 +1,4 @@
-package com.buschmais.training.jee.adapters.primary.rest.mapper;
+package com.buschmais.training.jee.adapters.primary.rest.exception;
 
 import com.buschmais.training.jee.adapters.primary.rest.dto.ErrorDTO;
 import com.buschmais.training.jee.application.exception.NotFoundException;

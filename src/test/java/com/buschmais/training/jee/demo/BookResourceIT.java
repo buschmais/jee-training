@@ -1,6 +1,7 @@
 package com.buschmais.training.jee.demo;
 
 import java.net.URL;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -8,8 +9,10 @@ import com.buschmais.training.jee.adapters.primary.rest.dto.BookDTO;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -21,11 +24,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static jakarta.ws.rs.client.Entity.entity;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * The user "testuser" is provided by src/test/configuration/application-users.properties.
+ */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class BookResourceIT {
+
+    private static final String USER = "testuser";
+
+    private static final String PASSWORD = "testpassword";
 
     @ArquillianResource
     private URL deploymentUrl;
@@ -36,7 +47,9 @@ public class BookResourceIT {
 
     @BeforeEach
     void beforeAll() {
-        client = ClientBuilder.newClient();
+        client = ClientBuilder.newClient()
+                .register((ClientRequestFilter) requestContext -> requestContext.getHeaders()
+                        .putSingle(HttpHeaders.AUTHORIZATION, basicAuth(USER, PASSWORD)));
         booksTarget = client.target(deploymentUrl.toString() + "/rest/books");
     }
 
@@ -121,5 +134,10 @@ public class BookResourceIT {
                 .request()
                 .delete();
         assertThat(response.getStatus()).isEqualTo(expectedStatus.getStatusCode());
+    }
+
+    private static String basicAuth(String user, String password) {
+        return "Basic " + Base64.getEncoder()
+                .encodeToString((user + ":" + password).getBytes(UTF_8));
     }
 }
