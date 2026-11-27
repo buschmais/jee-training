@@ -30,6 +30,11 @@ public class BookJpaRepository implements BookRepository {
     }
 
     @Override
+    public void update(Book book) {
+        entityManager.merge(book);
+    }
+
+    @Override
     public List<Book> findByTitle(String title) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Book> query = criteriaBuilder.createQuery(Book.class);

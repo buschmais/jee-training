@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.buschmais.training.jee.adapters.primary.rest.exception.ValidationException;
 import com.buschmais.training.jee.application.BookApplicationService;
 import com.buschmais.training.jee.application.BookRepository;
 import com.buschmais.training.jee.application.model.Book;
@@ -23,6 +24,14 @@ public class BookApplicationServiceImpl implements BookApplicationService {
     @Override
     public UUID create(Book book) {
         return bookRepository.create(book);
+    }
+
+    @Override
+    public void update(UUID id, Book book) {
+        if (id == null || !id.equals(book.getId())) {
+            throw new ValidationException("Book id is not vaild: " + id);
+        }
+        bookRepository.update(book);
     }
 
     @Override

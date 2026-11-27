@@ -82,6 +82,19 @@ public class BookResourceIT {
     }
 
     @Test
+    void update() {
+        UUID id = create("Harry Potter", "12345");
+
+        BookDTO bookDTO = findById(id);
+        bookDTO.setTitle("Harry Potter II");
+
+        update(id, bookDTO);
+
+        BookDTO updatedBookDTO = findById(id);
+        assertThat(updatedBookDTO.getTitle()).isEqualTo("Harry Potter II");
+    }
+
+    @Test
     void delete() {
         UUID id = create("Harry Potter", "12345");
 
@@ -102,6 +115,15 @@ public class BookResourceIT {
                         .build(), MediaType.APPLICATION_JSON_TYPE));
         assertThat(response.getStatus()).isEqualTo(Response.Status.CREATED.getStatusCode());
         return response.readEntity(UUID.class);
+    }
+
+    private void update(UUID id, BookDTO bookDTO) {
+        Response response = booksTarget.path("{id}")
+                .resolveTemplate("id", id)
+                .request()
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .put(entity(bookDTO, MediaType.APPLICATION_JSON_TYPE));
+        assertThat(response.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());
     }
 
     private BookDTO findById(UUID id) {

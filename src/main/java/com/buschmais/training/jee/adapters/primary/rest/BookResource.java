@@ -35,6 +35,16 @@ public class BookResource {
                 .build();
     }
 
+    @PUT
+    @Consumes(APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
+    @Path("{id}")
+    public Response update(@PathParam("id") UUID id, BookDTO bookDTO) {
+        bookApplicationService.update(id, bookDTOMapper.toDomain(bookDTO));
+        return Response.status(Response.Status.OK)
+                .build();
+    }
+
     @GET
     @Produces(APPLICATION_JSON)
     public List<BookDTO> findByTitle(@QueryParam("title") String title) {

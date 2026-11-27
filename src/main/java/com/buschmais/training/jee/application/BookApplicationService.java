@@ -10,6 +10,8 @@ public interface BookApplicationService {
 
     UUID create(Book book);
 
+    void update(UUID id, Book book);
+
     List<Book> findByTitle(String title);
 
     Optional<Book> findById(UUID id);

@@ -10,6 +10,8 @@ public interface BookRepository {
 
     UUID create(Book book);
 
+    void update(Book book);
+
     List<Book> findByTitle(String title);
 
     Optional<Book> findById(UUID id);
