@@ -9,41 +9,55 @@ import com.buschmais.training.jee.application.BookApplicationService;
 import com.buschmais.training.jee.application.BookRepository;
 import com.buschmais.training.jee.application.model.Book;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.annotation.Resource;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.SessionContext;
+import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-@Transactional
-@ApplicationScoped
-@RequiredArgsConstructor(onConstructor_ = @Inject)
+@DenyAll
+@Stateless
+@Slf4j
 public class BookApplicationServiceImpl implements BookApplicationService {
 
-    private final BookRepository bookRepository;
+    @Inject
+    private BookRepository bookRepository;
 
+    @Resource
+    private SessionContext sessionContext;
+
+    @RolesAllowed("user")
     @Override
     public UUID create(Book book) {
         return bookRepository.create(book);
     }
 
+    @RolesAllowed("user")
     @Override
     public void update(UUID id, Book book) {
         if (id == null || !id.equals(book.getId())) {
-            throw new ValidationException("Book id is not vaild: " + id);
+            throw new ValidationException("Book id is not valid: " + id);
         }
         bookRepository.update(book);
     }
 
+    @PermitAll
     @Override
     public List<Book> findByTitle(String title) {
+        log.info("Current principal: {}.", sessionContext.getCallerPrincipal());
         return bookRepository.findByTitle(title);
     }
 
+    @PermitAll
     @Override
     public Optional<Book> findById(UUID id) {
         return bookRepository.findById(id);
     }
 
+    @RolesAllowed("user")
     @Override
     public void delete(UUID id) {
         bookRepository.delete(id);
